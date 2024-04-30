@@ -22,7 +22,11 @@ pipeline {
             steps {
                 // Code quality analysis steps, e.g., run SonarQube
                 withSonarQubeEnv('SonarQube Server') {
-                    sh 'mvn sonar:sonar'
+                    sh 'mvn clean verify sonar:sonar \
+                        -Dsonar.projectKey=Online-book-store \
+                        -Dsonar.projectName="Online book store" \
+                        -Dsonar.host.url=http://localhost:9000 \
+                        -Dsonar.token=sqp_c00359ecd060ea26e73d1e34e8a1c90ef0f77f22'
                 }
             }
         }
