@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'docker-agent'
+    }
     tools {
         maven '3.9.6'
     }
@@ -35,7 +37,7 @@ pipeline {
             steps {
                 // Deploy to test environment, e.g., deploy to staging server or Docker container
                 sh 'docker build -t my-app .'
-                sh 'docker run -d --name test-app my-app'
+                sh 'docker run -d --name test-app -p 8080:8080 my-app'
             }
         }
 
