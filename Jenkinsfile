@@ -41,9 +41,12 @@ pipeline {
 
         stage('Release to Production') {
             steps {
-                // Release to production environment, e.g., deploy to production server
-                sh 'docker push my-app:latest'
-                sh 'ansible-playbook site.yml -i production'
+                // Authenticate with Docker registry
+                withCredentials([usernamePassword(credentialsId: 'e86c801b-404a-4e23-90eb-1ef5566e9aa5', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
+                    // Push the Docker image to your Docker registry
+                    sh 'docker push my-registry.com/my-app:latest'
+                }
             }
         }
 
