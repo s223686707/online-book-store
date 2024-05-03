@@ -44,8 +44,8 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'e86c801b-404a-4e23-90eb-1ef5566e9aa5', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
                     // Push the Docker image to your Docker registry
-                    sh 'docker tag my-app:latest subhash707/my-app:latest'
-                    sh 'docker push subhash707/my-app:latest'
+                    sh 'docker tag my-app:latest subhash707/project:latest'
+                    sh 'docker push subhash707/project:latest'
                 }
             }
         }
