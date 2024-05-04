@@ -47,7 +47,7 @@ pipeline {
         stage('Monitoring and Alerting') {
             steps {
                 script {
-                    def containerId = sh(script: "docker run -d subhash707/project:latest java -javaagent:/dd-java-agent.jar -Ddd.logs.injection=true -Ddd.env=staging -jar /app.jar", returnStdout: true).trim()
+                    def containerId = sh(script: "docker run -d subhash707/project:latest java -javaagent:/dd-java-agent.jar -Ddd.logs.injection=true -Ddd.env=staging -jar /target/Menu-Driven-0.0.1-SNAPSHOT.jar", returnStdout: true).trim()
                     echo "Container ID: ${containerId}"
                     sleep(time: 2, unit: "MINUTES")
                     sh "docker stop ${containerId}"
