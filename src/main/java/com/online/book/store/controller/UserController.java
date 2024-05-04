@@ -14,6 +14,8 @@ import com.online.book.store.repository.BookRepo;
 import com.online.book.store.repository.OrderRepo;
 import com.online.book.store.repository.UserRepo;
 
+import datadog.trace.api.Trace;
+
 @Controller
 public class UserController {
 
@@ -31,6 +33,7 @@ public class UserController {
 	
 
 	@RequestMapping("/User_Home")
+	@Trace
 	public ModelAndView User_Home(String User_Session,String print)
 	{
 		ModelAndView mv = new ModelAndView("User_View");
@@ -43,6 +46,8 @@ public class UserController {
 		
 		return mv;
 	}
+
+	
 	
 	@RequestMapping("/User_Books")
 	public ModelAndView User_Books(String User_Session)

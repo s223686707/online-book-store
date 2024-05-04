@@ -26,6 +26,21 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.datadoghq</groupId>
+			<artifactId>dd-trace-ot</artifactId>
+			<version>1.31.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.datadoghq</groupId>
+			<artifactId>dd-java-agent</artifactId>
+			<version>1.33.0</version>
+		</dependency>
+		<dependency>
+    		<groupId>com.datadoghq</groupId>
+   			 <artifactId>dd-trace-api</artifactId>
+   			 <version>1.33.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web-services</artifactId>
 		</dependency>

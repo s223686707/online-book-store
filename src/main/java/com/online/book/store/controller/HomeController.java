@@ -10,6 +10,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.online.book.store.configuration.UserRegistration;
 import com.online.book.store.repository.UserRepo;
 
+import datadog.trace.api.Trace;
+
 @Controller
 public class HomeController {
 
@@ -24,6 +26,7 @@ public class HomeController {
 
 	
 	@RequestMapping("/")
+	@Trace
 	public ModelAndView Home()
 	{
 		ModelAndView mv = new ModelAndView("Home");
@@ -31,6 +34,7 @@ public class HomeController {
 	}
 	
 	@RequestMapping("/Login")
+	@Trace
 	public ModelAndView Login(String print, String User, String Pass)
 	{
 		ModelAndView mv = new ModelAndView();
@@ -53,6 +57,7 @@ public class HomeController {
 	}
 	
 	@RequestMapping("/User")
+	@Trace
 	public ModelAndView User()
 	{
 		ModelAndView mv = new ModelAndView();
@@ -61,6 +66,7 @@ public class HomeController {
 	}
 	
 	@RequestMapping("/VerifyLogin")
+	@Trace
 	public ModelAndView VerifyLogin(String email, String password,UserController u1) 
 	{
 		ModelAndView mv = new ModelAndView("Login_Form");
@@ -95,6 +101,7 @@ public class HomeController {
 
 	
 	@RequestMapping("/User_Registration")
+	@Trace
 	public ModelAndView User_Registration(UserRegistration ureg,String email, String password)
 	{
 		ModelAndView mv = new ModelAndView("Registration_Form");
