@@ -60,8 +60,8 @@ pipeline {
 
     post {
         always {
-            sh 'docker stop test-app'
-            sh 'docker rm test-app'
+            sh 'docker stop my-app'
+            sh 'docker rm my-app'
             mail to: 'team@example.com', subject: "Pipeline Status: ${currentBuild.fullDisplayName}", body: "${currentBuild.result}"
         }
     }
