@@ -3,11 +3,6 @@ pipeline {
     tools {
         maven '3.9.6'
     }
-
-    environment {
-        DOCKER_IMAGE = 'your-docker-registry/your-image:latest'
-    }
-
     stages {
         stage('Build') {
             steps {
@@ -51,7 +46,7 @@ pipeline {
 
         stage('Monitoring and Alerting') {
             steps {
-                sh 'docker run -it --rm ${DOCKER_IMAGE} java -javaagent:/dd-java-agent.jar \
+                sh 'docker run -it --rm subhash707/project:latest java -javaagent:/dd-java-agent.jar \
                     -Ddd.logs.injection=true \
                     -Ddd.env=dev \
                     -jar /app.jar'
