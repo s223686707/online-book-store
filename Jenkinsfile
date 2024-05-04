@@ -46,11 +46,13 @@ pipeline {
 
         stage('Monitoring and Alerting') {
             steps {
-                timeout(time:5, unit: 'MINUTES'){
-                    sh 'docker run --rm subhash707/project:latest java -javaagent:/dd-java-agent.jar \
-                    -Ddd.logs.injection=true \
-                    -Ddd.env=dev \
-                    -jar /app.jar'
+                script {
+                    def containerId = sh(script: "docker run -d subhash707/project:latest java -javaagent:/dd-java-agent.jar -Ddd.logs.injection=true -Ddd.env=dev -jar /app.jar", returnStdout: true).trim()
+                    echo "Container ID: ${containerId}"
+                    sleep(time: 2, unit: "MINUTES")
+                    sh "docker stop ${containerId}"
+                    sh "docker rm ${containerId}"
+                    
                 }
             }
         }
