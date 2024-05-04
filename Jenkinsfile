@@ -50,9 +50,9 @@ pipeline {
                     def containerId = sh(script: "docker run -d subhash707/project:latest java -javaagent:/dd-java-agent.jar -Ddd.logs.injection=true -Ddd.env=staging -jar /target/Menu-Driven-0.0.1-SNAPSHOT.jar", returnStdout: true).trim()
                     echo "Container ID: ${containerId}"
                     def ipAddress = sh(script: "docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${containerId}", returnStdout: true).trim()
-                    def url = "http://${ipAddress}:8080"
+                    def url = "http://${ipAddress}:9555"
                     echo "Application URL: ${url}"
-                    sleep(time: 2, unit: "MINUTES")
+                    sleep(time: 5, unit: "MINUTES")
                     sh "docker stop ${containerId}"
                     sh "docker rm ${containerId}"
                     
