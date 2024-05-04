@@ -46,10 +46,12 @@ pipeline {
 
         stage('Monitoring and Alerting') {
             steps {
-                sh 'docker run --rm subhash707/project:latest java -javaagent:/dd-java-agent.jar \
+                timeout(time:5, unit: 'MINUTES'){
+                    sh 'docker run --rm subhash707/project:latest java -javaagent:/dd-java-agent.jar \
                     -Ddd.logs.injection=true \
                     -Ddd.env=dev \
                     -jar /app.jar'
+                }
             }
         }
     }
