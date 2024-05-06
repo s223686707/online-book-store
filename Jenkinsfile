@@ -47,22 +47,10 @@ pipeline {
         stage('Monitoring and Alerting') {
             steps {
                 script {
-                    def agentJarPath = '/Users/subhash/Downloads/check/dd-java-agent.jar'
-                    def containerId = sh(script: "docker run -d -p 8095:8095 -v ${agentJarPath}:/dd-java-agent.jar my-app:latest java -javaagent:/dd-java-agent.jar -Ddd.logs.injection=true -Ddd.env=staging -jar /target/Menu-Driven-0.0.1-SNAPSHOT.jar", returnStdout: true).trim()
-                    echo "Container ID: ${containerId}"
-                    // Verify port mapping
-                    sh "docker inspect --format='{{json .HostConfig.PortBindings}}' ${containerId}"
-            
-                    // Get host IP address
-                    def hostIpAddress = sh(script: "hostname -I | cut -d' ' -f1", returnStdout: true).trim()
-
-                    // Construct the URL using the host IP address and port
-                    def url = "http://${hostIpAddress}:8095"
-                    echo "Application URL: ${url}"
-
-                    sleep(time: 5, unit: "MINUTES")
-                    sh "docker stop ${containerId}"
-                    sh "docker rm ${containerId}"
+                    sh "java -Ddd.env=staging \
+                        -javaagent:/Users/subhash/Downloads/check/dd-java-agent.jar \
+                        -Ddd.logs.injection=true \
+                        -jar target/Menu-Driven-0.0.1-SNAPSHOT.jar"
                     
                 }
             }
