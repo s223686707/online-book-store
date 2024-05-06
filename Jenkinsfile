@@ -45,20 +45,22 @@ pipeline {
             }
         }
 
-        stage('Monitoring and Alerting') {
+        stage('Run Java Application') {
             steps {
                 script {
-                    sh '''
-                        docker run --rm -d --name my-monitoring-container -p 8095:8095 --mount type=bind,source="/Users/subhash/Downloads/check/dd-java-agent.jar",target=/app/dd-java-agent.jar subhash707/project:latest sh -c "java -Ddd.env=test -javaagent:/app/dd-java-agent.jar -Ddd.logs.injection=true -jar target/Menu-Driven-0.0.1-SNAPSHOT.jar"
-                        sleep 300
-                        docker stop my-monitoring-container
-                        sleep 10
-                        docker rm my-monitoring-container
-                    '''
+                    // Define the command
+                    def command = """java -javaagent:/Users/subhash/Downloads/check/dd-java-agent.jar \\
+                        -Ddd.env=testing2 \\
+                        -Ddd.logs.injection=true \\
+                        -jar target/Menu-Driven-0.0.1-SNAPSHOT.jar"""
+                    
+                    // Execute the command in background with timeout
+                    timeout(time: 3, unit: 'MINUTES') {
+                        sh label: 'Run Java Application', script: command, background: true
+                    }
                 }
             }
         }
-    }
 
     post {
         always {
