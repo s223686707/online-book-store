@@ -47,7 +47,7 @@ pipeline {
         stage('Monitoring and Alerting') {
             steps {
                 script {
-                    sh 'wget https://your-artifact-repo.com/dd-java-agent.jar'
+                    sh '/opt/homebrew/bin/wget https://your-artifact-repo.com/dd-java-agent.jar'
                     def containerId = sh(script: "docker run -d -p 8095:8095 -v \$(pwd)/dd-java-agent.jar:/dd-java-agent.jar my-app:latest java -javaagent:/dd-java-agent.jar -Ddd.logs.injection=true -Ddd.env=staging -jar /target/Menu-Driven-0.0.1-SNAPSHOT.jar", returnStdout: true).trim()
                     echo "Container ID: ${containerId}"
                     def ipAddress = sh(script: "docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${containerId}", returnStdout: true).trim()
