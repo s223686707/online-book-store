@@ -50,13 +50,17 @@ pipeline {
                 script {
                     // Define the command
                     def command = """java -javaagent:/Users/subhash/Downloads/check/dd-java-agent.jar \\
-                        -Ddd.env=testing2 \\
+                        -Ddd.env=testing3 \\
                         -Ddd.logs.injection=true \\
                         -jar target/Menu-Driven-0.0.1-SNAPSHOT.jar"""
                     
                     // Execute the command in background with timeout
-                    timeout(time: 3, unit: 'MINUTES') {
-                        sh label: 'Run Java Application', script: command, background: true
+                    try {
+                        timeout(time: 3, unit: 'MINUTES') {
+                            sh label: 'Run Java Application', script: command, background: true
+                        }
+                    } catch (err) {
+                        // Catch timeout error but do nothing
                     }
                 }
             }
@@ -65,8 +69,6 @@ pipeline {
 
     post {
         always {
-            sh 'docker stop my-app'
-            sh 'docker rm my-app'
             mail to: 'team@example.com', subject: "Pipeline Status: ${currentBuild.fullDisplayName}", body: "${currentBuild.result}"
         }
     }
