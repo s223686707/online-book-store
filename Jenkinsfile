@@ -47,12 +47,12 @@ pipeline {
 
                     // Use withKubeConfig to apply Kubernetes configurations
                     withKubeConfig([credentialsId: 'minikube-kubeconfig', serverUrl: 'https://127.0.0.1:52437']) {
-                        // Update the deployment image
-                        sh 'kubectl set image deployment/my-app-deployment my-app=subhash707/project:latest'
-
-                        // Apply Kubernetes deployment and service configurations
+                        // Apply Kubernetes deployment and service configurations to ensure the deployment exists
                         sh 'kubectl apply -f k8s/deployment.yaml'
                         sh 'kubectl apply -f k8s/service.yaml'
+
+                        // Update the deployment image
+                        sh 'kubectl set image deployment/my-app-deployment my-app=subhash707/project:latest --record'
                     }
                 }
             }
