@@ -49,9 +49,9 @@ pipeline {
                         def imageTag = 'v1.0'
 
                         // Tag the Docker image
-                        sh '$GCLOUD_PATHdocker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}'
+                        sh 'docker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}'
 
-                        sh 'gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://australia-southeast1-docker.pkg.dev'
+                        sh '$GCLOUD_PATH/gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://australia-southeast1-docker.pkg.dev'
 
                         // Push the Docker image to Artifact Registry
                         sh "docker push australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
