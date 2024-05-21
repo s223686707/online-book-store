@@ -49,7 +49,7 @@ pipeline {
                         def imageTag = 'v1.0'
 
                         // Tag the Docker image
-                        sh 'docker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}'
+                        sh "docker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
 
                         sh '$GCLOUD_PATH/gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://australia-southeast1-docker.pkg.dev'
 
