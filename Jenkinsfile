@@ -39,8 +39,8 @@ pipeline {
             steps {
                 withEnv(['GCLOUD_PATH=/Users/subhash/google-cloud-sdk/bin']) {
                     // Authenticate with GCP
-                    sh 'gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/sit737-24t1-subhash-c10ae83-d47db93d86a4.json'
-                    sh 'gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
+                    sh '$GCLOUD_PATH/gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/sit737-24t1-subhash-c10ae83-d47db93d86a4.json'
+                    sh '$GCLOUD_PATH/gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
 
                     script {
                         // Define project ID, repository name, and image tag
