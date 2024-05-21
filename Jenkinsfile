@@ -39,7 +39,7 @@ pipeline {
             steps {
                 withEnv(['GCLOUD_PATH=/Users/subhash/google-cloud-sdk/bin']) {
                     // Authenticate with GCP
-                    sh '$GCLOUD_PATH/gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/adept-array-424007-i3-6e5d1a25e0a7.json'
+                    sh '$GCLOUD_PATH/gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/adept-array-424007-i3-0146e4d40d3b.json'
                     sh '$GCLOUD_PATH/gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
 
                     script {
