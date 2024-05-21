@@ -39,9 +39,25 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'GCP_SERVICE_ACCOUNT_KEY', variable: 'SERVICE_ACCOUNT_KEY')]) {
                     withEnv(['GCLOUD_PATH=/Users/subhash/google-cloud-sdk/bin']) {
+                        // Debug: Print environment variables
+                        sh 'echo "GCLOUD_PATH: $GCLOUD_PATH"'
+                        sh 'echo "SERVICE_ACCOUNT_KEY: $SERVICE_ACCOUNT_KEY"'
+                        sh 'ls -l $SERVICE_ACCOUNT_KEY'
+
                         // Authenticate with GCP
-                        sh '$GCLOUD_PATH/gcloud auth activate-service-account --key-file=$SERVICE_ACCOUNT_KEY'
-                        sh '$GCLOUD_PATH/gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
+                        sh 'gcloud auth activate-service-account --key-file=$SERVICE_ACCOUNT_KEY'
+                        
+                        // Debug: Print active service account
+                        sh 'gcloud auth list'
+                        
+                        // Debug: Print the current access token
+                        sh 'gcloud auth print-access-token'
+
+                        // Configure Docker to use gcloud as a credential helper
+                        sh 'gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
+
+                        // Debug: Print Docker configuration
+                        sh 'cat ~/.docker/config.json'
 
                         script {
                             // Define project ID, repository name, and image tag
@@ -53,7 +69,7 @@ pipeline {
                             sh "docker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
 
                             // Authenticate Docker using access token
-                            sh '$GCLOUD_PATH/gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://australia-southeast1-docker.pkg.dev'
+                            sh 'gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://australia-southeast1-docker.pkg.dev'
 
                             // Push the Docker image to Artifact Registry
                             sh "docker push australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
