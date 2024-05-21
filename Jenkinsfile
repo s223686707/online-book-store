@@ -44,7 +44,7 @@ pipeline {
 
                     script {
                         // Define project ID, repository name, and image tag
-                        def projectId = 'sit737-24t1-subhash-c10ae83'
+                        def projectId = 'adept-array-424007-i3'
                         def repoName = 'project-repo'
                         def imageTag = 'v1.0'
 
