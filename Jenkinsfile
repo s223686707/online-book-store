@@ -37,25 +37,27 @@ pipeline {
 
         stage('Release to Production') {
             steps {
-                withEnv(['GCLOUD_PATH=/Users/subhash/google-cloud-sdk/bin']) {
-                    // Authenticate with GCP
-                    sh '$GCLOUD_PATH/gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/adept-array-424007-i3-0146e4d40d3b.json'
-                    sh '$GCLOUD_PATH/gcloud auth login'
-                    sh '$GCLOUD_PATH/gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
+                withCredentials([file(credentialsId: 'GCP_SERVICE_ACCOUNT_KEY', variable: 'SERVICE_ACCOUNT_KEY')]) {
+                    withEnv(['GCLOUD_PATH=/Users/subhash/google-cloud-sdk/bin']) {
+                        // Authenticate with GCP
+                        sh '$GCLOUD_PATH/gcloud auth activate-service-account --key-file=$SERVICE_ACCOUNT_KEY'
+                        sh '$GCLOUD_PATH/gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
 
-                    script {
-                        // Define project ID, repository name, and image tag
-                        def projectId = 'adept-array-424007-i3'
-                        def repoName = 'project-repo'
-                        def imageTag = 'v1.0'
+                        script {
+                            // Define project ID, repository name, and image tag
+                            def projectId = 'adept-array-424007-i3'
+                            def repoName = 'project-repo'
+                            def imageTag = 'v1.0'
 
-                        // Tag the Docker image
-                        sh "docker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
+                            // Tag the Docker image
+                            sh "docker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
 
-                        sh '$GCLOUD_PATH/gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://australia-southeast1-docker.pkg.dev'
+                            // Authenticate Docker using access token
+                            sh '$GCLOUD_PATH/gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://australia-southeast1-docker.pkg.dev'
 
-                        // Push the Docker image to Artifact Registry
-                        sh "docker push australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
+                            // Push the Docker image to Artifact Registry
+                            sh "docker push australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
+                        }
                     }
                 }
             }
