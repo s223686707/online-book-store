@@ -31,28 +31,28 @@ pipeline {
 
         stage('Deploy to Test') {
             steps {
-                sh 'docker build -t my-app .'
+                sh 'docker build -t my-app:latest .'
             }
         }
 
         stage('Release to Production') {
             steps {
-                withCredentials([file(credentialsId: 'GCP_SERVICE_ACCOUNT_KEY', variable: 'SERVICE_ACCOUNT_KEY')]) {
-                    withEnv(['GCLOUD_PATH=/Users/subhash/google-cloud-sdk/bin']) {
-                        // Authenticate with GCP
-                        sh '$GCLOUD_PATH/gcloud auth activate-service-account --key-file=$SERVICE_ACCOUNT_KEY'
-                        sh '$GCLOUD_PATH/gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
+                script {
+                    // Push Docker image to Docker Hub
+                    withCredentials([usernamePassword(credentialsId: 'e86c801b-404a-4e23-90eb-1ef5566e9aa5', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
+                        sh 'docker tag my-app:latest subhash707/project:latest'
+                        sh 'docker push subhash707/project:latest'
+                    }
 
-                        script {
-                            // Define project ID, repository name, and image tag
-                            def projectId = 'adept-array-424007-i3'
-                            def imageTag = 'v1.0'
+                    // Use withKubeConfig to apply Kubernetes configurations
+                    withKubeConfig([credentialsId: 'minikube-kubeconfig', serverUrl: 'https://127.0.0.1:52437']) {
+                        // Update the deployment image
+                        sh 'kubectl set image deployment/my-app-deployment my-app=subhash707/project:latest'
 
-                            // Tag the Docker image
-                            sh "docker tag my-app gcr.io/${projectId}/my-app:${imageTag}"
-
-                            sh "docker push gcr.io/${projectId}/my-app:${imageTag}"
-                        }
+                        // Apply Kubernetes deployment and service configurations
+                        sh 'kubectl apply -f k8s/deployment.yaml'
+                        sh 'kubectl apply -f k8s/service.yaml'
                     }
                 }
             }
