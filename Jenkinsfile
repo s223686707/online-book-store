@@ -37,10 +37,24 @@ pipeline {
 
         stage('Release to Production') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'e86c801b-404a-4e23-90eb-1ef5566e9aa5', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
-                    sh 'docker tag my-app:latest subhash707/project:latest'
-                    sh 'docker push subhash707/project:latest'
+                withEnv(['GCLOUD_PATH=/Users/subhash/google-cloud-sdk/bin']) {
+                    // Authenticate with GCP
+                    sh '$GCLOUD_PATH/gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/adept-array-424007-i3-74f152a4d5a1.json'
+                    sh '$GCLOUD_PATH/gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
+
+                    script {
+                        // Define project ID, repository name, and image tag
+                        def projectId = 'adept-array-424007-i3'
+                        def repoName = 'project-repo'
+                        def imageTag = 'v1.0'
+
+                        // Tag the Docker image
+                        sh "docker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
+
+
+                        // Push the Docker image to Artifact Registry
+                        sh "docker push australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
+                    }
                 }
             }
         }
@@ -73,4 +87,3 @@ pipeline {
         }
     }
 }
-
