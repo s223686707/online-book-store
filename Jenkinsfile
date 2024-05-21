@@ -37,25 +37,10 @@ pipeline {
 
         stage('Release to Production') {
             steps {
-                withEnv(['GCLOUD_PATH=/Users/subhash/google-cloud-sdk/bin']) {
-                    // Authenticate with GCP
-                    sh '$GCLOUD_PATH/gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/sit737-24t1-subhash-c10ae83-d47db93d86a4.json'
-                    sh '$GCLOUD_PATH/gcloud auth configure-docker australia-southeast2-docker.pkg.dev'
-
-                    script {
-                        // Define project ID, repository name, and image tag
-                        def projectId = 'sit737-24t1-subhash-c10ae83'
-                        def repoName = 'calculator-microservice'
-                        def imageTag = 'v1.0'
-
-                        // Tag the Docker image
-                        sh "docker tag my-app australia-southeast2-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
-
-                        sh '$GCLOUD_PATH/gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://australia-southeast2-docker.pkg.dev'
-
-                        // Push the Docker image to Artifact Registry
-                        sh "docker push australia-southeast2-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
-                    }
+                withCredentials([usernamePassword(credentialsId: 'e86c801b-404a-4e23-90eb-1ef5566e9aa5', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
+                    sh 'docker tag my-app:latest subhash707/project:latest'
+                    sh 'docker push subhash707/project:latest'
                 }
             }
         }
@@ -88,3 +73,4 @@ pipeline {
         }
     }
 }
+
