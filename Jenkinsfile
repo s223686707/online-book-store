@@ -37,24 +37,28 @@ pipeline {
 
         stage('Release to Production') {
             steps {
-                withEnv(['GCLOUD_PATH=/Users/subhash/google-cloud-sdk/bin']) {
-                    // Authenticate with GCP
-                    sh '$GCLOUD_PATH/gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/adept-array-424007-i3-1cc37dc24c57.json'
-                    sh '$GCLOUD_PATH/gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
+                script {
+                    // Install the Octopus Deploy CLI
+                    sh 'curl -OL https://download.octopusdeploy.com/octopus-tools/7.4.2/octopustools.7.4.2.linux-x64.tar.gz'
+                    sh 'tar -xvzf octopustools.7.4.2.linux-x64.tar.gz'
 
-                    script {
-                        // Define project ID, repository name, and image tag
-                        def projectId = 'adept-array-424007-i3'
-                        def repoName = 'project-repo'
-                        def imageTag = 'v1.0'
+                    // Push the artifact to Octopus Deploy
+                    def octopusServer = 'https://project.octopus.app'
+                    def octopusApiKey = 'API-E7T1ONUCUAEKPUWL4ZYNBKKKOEYRTXFM'
+                    def spaceId = 'https://project.octopus.app/app#/Spaces-2'
+                    def projectId = 'https://project.octopus.app/app#/Spaces-2/projects/project-123'
+                    def packageVersion = "${env.BUILD_NUMBER}"
+                    def packagePath = 'target/*.jar' // Use wildcard to match the JAR file
 
-                        // Tag the Docker image
-                        sh "docker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
+                    sh "./octo pack --id=${projectId} --format=zip --version=${packageVersion} --basePath=target ${packagePath}"
+                    sh "./octo push --server=${octopusServer} --apiKey=${octopusApiKey} --space=${spaceId} --package=target/${projectId}.${packageVersion}.zip"
 
+                    // Create a new release
+                    sh "./octo create-release --server=${octopusServer} --apiKey=${octopusApiKey} --space=${spaceId} --project=${projectId} --version=${packageVersion} --package=${projectId}.${packageVersion}.zip"
 
-                        // Push the Docker image to Artifact Registry
-                        sh "docker push australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
-                    }
+                    // Deploy the release to the production environment
+                    def environmentId = 'YOUR_PRODUCTION_ENVIRONMENT_ID'
+                    sh "./octo deploy-release --server=${octopusServer} --apiKey=${octopusApiKey} --space=${spaceId} --project=${projectId} --version=${packageVersion} --environment=${environmentId}"
                 }
             }
         }
