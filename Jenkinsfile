@@ -37,11 +37,22 @@ pipeline {
 
         stage('Release to Production') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'e86c801b-404a-4e23-90eb-1ef5566e9aa5', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
-                    sh 'docker tag my-app:latest subhash707/project:latest'
-                    sh 'docker push subhash707/project:latest'
-                }
+                env.PATH = "${env.PATH}:/Users/subhash/google-cloud-sdk/bin"
+
+                // Authenticate with GCP
+                sh 'gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/sit737-24t1-subhash-c10ae83-d47db93d86a4.json'
+                sh 'gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
+
+                // Define project ID, repository name, and image tag
+                def projectId = 'sit737-24t1-subhash-c10ae83'
+                def repoName = 'project-repo'
+                def imageTag = 'v1.0'
+
+                // Tag the Docker image
+                sh "docker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
+
+                // Push the Docker image to Artifact Registry
+                sh "docker push australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
             }
         }
 
@@ -69,7 +80,7 @@ pipeline {
 
     post {
         always {
-            mail to: 'team@example.com', subject: "Pipeline Status: ${currentBuild.fullDisplayName}", body: "${currentBuild.result}"
+            mail to: 'subhashsainani4@gmail.com', subject: "Pipeline Status: ${currentBuild.fullDisplayName}", body: "${currentBuild.result}"
         }
     }
 }
