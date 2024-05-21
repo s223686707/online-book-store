@@ -37,22 +37,23 @@ pipeline {
 
         stage('Release to Production') {
             steps {
-                env.PATH = "${env.PATH}:/Users/subhash/google-cloud-sdk/bin"
+                withEnv(['GCLOUD_PATH=/Users/subhash/google-cloud-sdk/bin']){
+                    name
+                    // Authenticate with GCP
+                    sh 'gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/sit737-24t1-subhash-c10ae83-d47db93d86a4.json'
+                    sh 'gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
 
-                // Authenticate with GCP
-                sh 'gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/sit737-24t1-subhash-c10ae83-d47db93d86a4.json'
-                sh 'gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
+                    // Define project ID, repository name, and image tag
+                    def projectId = 'sit737-24t1-subhash-c10ae83'
+                    def repoName = 'project-repo'
+                    def imageTag = 'v1.0'
 
-                // Define project ID, repository name, and image tag
-                def projectId = 'sit737-24t1-subhash-c10ae83'
-                def repoName = 'project-repo'
-                def imageTag = 'v1.0'
+                    // Tag the Docker image
+                    sh "docker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
 
-                // Tag the Docker image
-                sh "docker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
-
-                // Push the Docker image to Artifact Registry
-                sh "docker push australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
+                    // Push the Docker image to Artifact Registry
+                    sh "docker push australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
+                }
             }
         }
 
