@@ -46,7 +46,7 @@ pipeline {
                     script {
                         // Define project ID, repository name, and image tag
                         def projectId = 'sit737-24t1-subhash-c10ae83'
-                        def repoName = 'project-repo'
+                        def repoName = 'calculator-repo'
                         def imageTag = 'v1.0'
 
                         // Tag the Docker image
