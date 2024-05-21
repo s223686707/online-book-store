@@ -37,8 +37,25 @@ pipeline {
 
         stage('Release to Production') {
             steps {
-                script {
-                    sh "echo \"OctoCLI: ${tool('OctoCLI')}\""
+                withEnv(['GCLOUD_PATH=/Users/subhash/google-cloud-sdk/bin']) {
+                    // Authenticate with GCP
+                    sh '$GCLOUD_PATH/gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/adept-array-424007-i3-74f152a4d5a1.json'
+                    sh '$GCLOUD_PATH/gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
+
+                    script {
+                        // Define project ID, repository name, and image tag
+                        def projectId = 'sit737-24t1-subhash-c10ae83'
+                        def repoName = 'project-repo'
+                        def imageTag = 'v1.0'
+
+                        // Tag the Docker image
+                        sh '$GCLOUD_PATHdocker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}'
+
+                        sh 'gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://australia-southeast1-docker.pkg.dev'
+
+                        // Push the Docker image to Artifact Registry
+                        sh "docker push australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
+                    }
                 }
             }
         }
