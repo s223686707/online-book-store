@@ -16,4 +16,4 @@ spec:
       - name: my-app
         image: subhash707/project:latest
         ports:
-        - containerPort: 8065
+        - containerPort: 8095
