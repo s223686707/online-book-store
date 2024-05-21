@@ -38,9 +38,6 @@ pipeline {
         stage('Release to Production') {
             steps {
                 script {
-                    // Install the Octopus Deploy CLI
-                    sh 'curl -OL https://download.octopusdeploy.com/octopus-tools/7.4.2/octopustools.7.4.2.linux-x64.tar.gz'
-                    sh 'tar -xvzf octopustools.7.4.2.linux-x64.tar.gz'
 
                     // Push the artifact to Octopus Deploy
                     def octopusServer = 'https://project.octopus.app'
