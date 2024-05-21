@@ -38,24 +38,7 @@ pipeline {
         stage('Release to Production') {
             steps {
                 script {
-
-                    // Push the artifact to Octopus Deploy
-                    def octopusServer = 'https://project.octopus.app'
-                    def octopusApiKey = 'API-E7T1ONUCUAEKPUWL4ZYNBKKKOEYRTXFM'
-                    def spaceId = 'https://project.octopus.app/app#/Spaces-2'
-                    def projectId = 'https://project.octopus.app/app#/Spaces-2/projects/project-123'
-                    def packageVersion = "${env.BUILD_NUMBER}"
-                    def packagePath = 'target/*.jar' // Use wildcard to match the JAR file
-
-                    sh "./octo pack --id=${projectId} --format=zip --version=${packageVersion} --basePath=target ${packagePath}"
-                    sh "./octo push --server=${octopusServer} --apiKey=${octopusApiKey} --space=${spaceId} --package=target/${projectId}.${packageVersion}.zip"
-
-                    // Create a new release
-                    sh "./octo create-release --server=${octopusServer} --apiKey=${octopusApiKey} --space=${spaceId} --project=${projectId} --version=${packageVersion} --package=${projectId}.${packageVersion}.zip"
-
-                    // Deploy the release to the production environment
-                    def environmentId = 'YOUR_PRODUCTION_ENVIRONMENT_ID'
-                    sh "./octo deploy-release --server=${octopusServer} --apiKey=${octopusApiKey} --space=${spaceId} --project=${projectId} --version=${packageVersion} --environment=${environmentId}"
+                    sh "echo \"OctoCLI: ${tool('OctoCLI')}\""
                 }
             }
         }
