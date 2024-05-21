@@ -40,7 +40,7 @@ pipeline {
                 withEnv(['GCLOUD_PATH=/Users/subhash/google-cloud-sdk/bin']) {
                     // Authenticate with GCP
                     sh '$GCLOUD_PATH/gcloud auth activate-service-account --key-file=/Users/subhash/Downloads/sit737-24t1-subhash-c10ae83-d47db93d86a4.json'
-                    sh '$GCLOUD_PATH/gcloud auth configure-docker australia-southeast1-docker.pkg.dev'
+                    sh '$GCLOUD_PATH/gcloud auth configure-docker australia-southeast2-docker.pkg.dev'
 
                     script {
                         // Define project ID, repository name, and image tag
@@ -49,12 +49,12 @@ pipeline {
                         def imageTag = 'v1.0'
 
                         // Tag the Docker image
-                        sh "docker tag my-app australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
+                        sh "docker tag my-app australia-southeast2-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
 
-                        sh '$GCLOUD_PATH/gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://australia-southeast1-docker.pkg.dev'
+                        sh '$GCLOUD_PATH/gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://australia-southeast2-docker.pkg.dev'
 
                         // Push the Docker image to Artifact Registry
-                        sh "docker push australia-southeast1-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
+                        sh "docker push australia-southeast2-docker.pkg.dev/${projectId}/${repoName}/my-app:${imageTag}"
                     }
                 }
             }
