@@ -58,7 +58,7 @@ pipeline {
             }
         }
 
-        stage('Run Java Application') {
+        stage('Monitoring Application') {
             steps {
                 script {
                     // Define the command
